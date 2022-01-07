@@ -7,9 +7,8 @@ import pytest
 
 
 @pytest.mark.functional
-def test_fetch_secret(test_dbt_pipeline):
-    """Tests obtaining credentials from a mock secretsmanager secret and
-        ensuring the fetched SecretString and ARN match the mocked secret
+def test_get_dbt_package(test_dbt_pipeline):
+    """Tests obtaining a packaged dbt project 
     """
     if os.environ.get("DBT_PASS"):
         del os.environ["DBT_PASS"]

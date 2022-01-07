@@ -41,7 +41,7 @@ class DBTPipeline:
                 # Fetch DBT package as a stream from Artifactory
                 dbt_package = requests.get(self.dbt_package_url, stream=True)
             except requests.exceptions.Timeout as e:
-                self.logger.printlog("ERROR:R equest to fetch Artifactory package has timed out")
+                self.logger.printlog("ERROR: Request to fetch Artifactory package has timed out")
                 raise SystemExit(e)
             except requests.exceptions.TooManyRedirects as e:
                 self.logger.printlog("ERROR: Invalid Artifactory URL provided")
@@ -75,11 +75,23 @@ class DBTPipeline:
             self.logger.printlog(
                 "Error: DBT_PACKAGE_TYPE set to 'artifactory' but artifactory URL not set in DBT_PACKAGE_URL")
 
+    def get_dbt_s3(self) -> None:
+        """Fetch DBT Package from S3"""
+        self.logger.printlog(f"Fetching DBT package from S3 url: {self.dbt_package_url}")
+
+    def get_dbt_github(self, branch: str) -> None:
+        """Fetch DBT project from Github"""
+        self.logger.printlog(f"Fetching DBT package from Github branch {branch} in repostiroy: {self.dbt_package_url}")
+
     def get_dbt_code(self) -> None:
         """Fetch DBT package based on the package type"""
         # Choose package fetch function based on package type (currently only Artifactory support)
         if self.dbt_package_type == "artifactory" and (self.dbt_package_url):
             self.get_dbt_artifactory()
+        elif self.dbt_package_type == "s3" and (self.dbt_package_url):
+            self.get_dbt_s3()
+        elif self.dbt_package_type == "github" and (self.dbt_package_url) and (self.dbt_package_branch):
+            self.get_dbt_s3(self.dbt_package_branch)
         else:
             self.logger.printlog(f"No DBT package type or URL specified. Assuming locally mounted in {self.dbt_path}/")
 
@@ -332,6 +344,16 @@ class DBTPipeline:
     def register_assets(self, value: str) -> None:
         """Set the value of REGISTER_ASSETS flag"""
         self._env_vars["REGISTER_ASSETS"] = value
+
+    @property
+    def dbt_package_branch(self) -> str:
+        """Get the value of DBT_PACKAGE_BRANCH flag"""
+        return self._env_vars["DBT_PACKAGE_BRANCH"]
+
+    @dbt_package_branch.setter
+    def dbt_package_branch(self, value: str) -> None:
+        """Set the value of DBT_PACKAGE_BRANCH flag"""
+        self._env_vars["DBT_PACKAGE_BRANCH"] = value
 
     @property
     def package_path(self) -> str:

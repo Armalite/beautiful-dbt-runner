@@ -92,32 +92,6 @@ dev-publish-dbt-package:
 build-dbt-runner-image:
 	docker build -t dbt-runner:latest .
 
-# This example fetches dbt package from artifactory and passes in several parameters (uses profiles.yml provided by the image)
-run-dbt-artifactory:
-	$(eval pwd:=$(shell pwd))
-	docker run -it \
-			-v $(pwd)/src:/src  \
-			-v $(pwd)/dbt_download:/dbt_download \
-			-e DBT_USER	\
-			-e DBT_PASS	\
-			-e DBT_PATH="dbt_tester"	\
-			-e DBT_COMMAND="./run_dbt.sh"	\
-			-e DBT_PACKAGE_TYPE="artifactory"	\
-			-e DBT_PACKAGE_URL="" \
-			dbt-runner:latest	\
-			$(SHELL)
-
-# This example fetches dbt package from artifactory, uses custom profiles.yml and fetches password secret
-run-dbt-artifactory-sa:
-	$(eval pwd:=$(shell pwd))
-	docker run -it \
-			-v $(pwd)/src:/src	\
-			-e DBT_PASS_SECRET_ARN="" 	\
-			-e DBT_COMMAND="dbt run --profiles-dir ."	\
-			-e DBT_PACKAGE_TYPE="artifactory"	\
-			-e DBT_PACKAGE_URL="" \
-			dbt-runner:latest \
-			$(SHELL)
 
 # This example mounts the local dbt project (dbt_tester) into the container under dbt/
 run-dbt-mounted:
