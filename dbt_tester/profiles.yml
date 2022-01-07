@@ -1,0 +1,28 @@
+default:
+  outputs:
+
+    dev:
+      type: snowflake
+      user: "adeeb@something.com"
+      authenticator: externalbrowser
+      account: somethingsomething.us-east-1
+      role: ROL_ADEEB_RAHMAN
+      database: USERSPACE_ADEEB
+      warehouse: BEAUTIFUL_TEST_WH
+      schema: test
+      threads: 4
+      query_tag: dbt
+
+    admin:
+      type: "snowflake"
+      account: "somethingsomething.us-east-1"
+      user: "adeeb@something.com"
+      password:  "{{ env_var('DBT_PASS') }}"
+      role: ACCOUNTADMIN
+      database: USERSPACE_ADEEB
+      warehouse: BEAUTIFUL_TEST_WH
+      schema: test
+      threads: 1
+      client_session_keep_alive: False
+
+  target: "{{ env_var('DBT_TARGET') }}"

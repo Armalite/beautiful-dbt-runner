@@ -1,0 +1,5 @@
+packages:
+  - package: Datavault-UK/dbtvault
+    version: 0.7.7
+  - package: calogica/dbt_expectations
+    version: 0.4.4

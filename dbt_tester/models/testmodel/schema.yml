@@ -1,0 +1,12 @@
+
+version: 2
+
+models:
+  - name: testmodel_1
+    description: "Test model 1"
+    columns:
+      - name: id
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null

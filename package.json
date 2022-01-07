@@ -1,0 +1,7 @@
+{
+    "name": "xade-dbt-runner",
+    "version": "0.0.4",
+    "devDependencies": {
+        "pyright": "1.1.187"
+    }
+}

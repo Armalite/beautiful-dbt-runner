@@ -1,0 +1,39 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: beautiful-data-vault
+spec:
+  schedule: "0 0 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: beautiful-dbt-runner
+            image: <image url>
+            env:
+              - name: DBT_PACKAGE_URL # Artifactory url for where the dbt project folder is packaged
+                value: <location of dbt package>
+              - name: DBT_PACKAGE_TYPE # Artifactory url type (leave this as artifactory)
+                value: "artifactory"
+              - name: DBT_COMMAND # The bash command to execute from within the dbt project folder.
+                value: "./run_dbt_model.sh" # In this example a shell script is kicked off, which has dbt run commands defined inside it
+              - name: DBT_DBNAME
+                value: "DATA_VAULT_SANDBOX"
+              - name: DBT_WH
+                value: "DATA_VAULT_SANDBOX_WH"
+              - name: DBT_SCHEMA
+                value: "MYSCHEMA"
+              - name: DBT_ROLE
+                value: "SYSADMIN"
+              - name: DBT_TARGET
+                value: "prod" # do not change
+              - name: DBT_USER_SECRET_ID # ID of the secretsmanager secret that contains the service account username
+                value: "beautiful-user"
+              - name: DBT_PASS_SECRET_ID # ID of the secretsmanager secret that contains the service account password
+                value: "beautiful-pass"
+              - name: DBT_CUSTOM_SCHEMA_OVERRIDE
+                value: "1"
+
+            imagePullPolicy: Always
+          restartPolicy: OnFailure

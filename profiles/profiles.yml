@@ -1,0 +1,41 @@
+beautiful:
+  target: "{{ env_var('DBT_TARGET') }}"
+  outputs:
+    prod:
+      type: "{{ env_var('DBT_TYPE'), 'snowflake' }}" # Does not need to be provided during runtime
+      account: "{{ env_var('DBT_ACCOUNT_ID', 'somethingsomething.us-east-1.snowflakecomputing.com')}}" # Does not need to be provided during runtime
+      user: "{{ env_var('DBT_USER') }}"
+      password: "{{ env_var('DBT_PASSWORD') }}"
+      role: ["{{ env_var('DBT_ROLE') }}"
+      database: "{{ env_var('DBT_DBNAME') }}"
+      warehouse: "{{ env_var('DBT_WH') }}"
+      schema: "{{ env_var('DBT_SCHEMA') }}"
+      threads: "{{ env_var('DBT_THREADS', 1) }}"
+      client_session_keep_alive: False
+      query_tag: "xade-dbt-runner"
+
+    uat:
+      type: "{{ env_var('DBT_TYPE'), 'snowflake' }}" # Does not need to be provided during runtime
+      account: "{{ env_var('DBT_ACCOUNT_ID', 'somethingsomethinguat.us-east-1.snowflakecomputing.com')}}" # Does not need to be provided during runtime
+      user: "{{ env_var('DBT_USER') }}"
+      password: "{{ env_var('DBT_PASSWORD') }}"
+      role: ["{{ env_var('DBT_ROLE') }}"
+      database: "{{ env_var('DBT_DBNAME') }}"
+      warehouse: "{{ env_var('DBT_WH') }}"
+      schema: "{{ env_var('DBT_SCHEMA') }}"
+      threads: "{{ env_var('DBT_THREADS', 1) }}"
+      client_session_keep_alive: False
+      query_tag: "xade-dbt-runner"
+
+    test:
+      type: "{{ env_var('DBT_TYPE'), 'snowflake' }}" # Does not need to be provided during runtime
+      account: "{{ env_var('DBT_ACCOUNT_ID', 'somethingsomethingtest.us-east-1.snowflakecomputing.com')}}" # Does not need to be provided during runtime
+      user: "{{ env_var('DBT_USER') }}"
+      password: "{{ env_var('DBT_PASSWORD') }}"
+      role: ["{{ env_var('DBT_ROLE') }}"
+      database: "{{ env_var('DBT_DBNAME') }}"
+      warehouse: "{{ env_var('DBT_WH') }}"
+      schema: "{{ env_var('DBT_SCHEMA') }}"
+      threads: "{{ env_var('DBT_THREADS', 1) }}"
+      client_session_keep_alive: False
+      query_tag: "xade-dbt-runner"
