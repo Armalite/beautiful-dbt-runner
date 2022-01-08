@@ -15,7 +15,7 @@ spec:
               - name: DBT_PACKAGE_URL # Artifactory url for where the dbt project folder is packaged
                 value: <location of dbt package>
               - name: DBT_PACKAGE_TYPE # Artifactory url type (leave this as artifactory)
-                value: "artifactory"
+                value: "github"
               - name: DBT_COMMAND # The bash command to execute from within the dbt project folder.
                 value: "./run_dbt_model.sh" # In this example a shell script is kicked off, which has dbt run commands defined inside it
               - name: DBT_DBNAME
