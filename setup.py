@@ -12,16 +12,16 @@ setup(
     description="one line description of your project",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    python_requires=">=3.9",
+    python_requires=">=3.8",
     packages=find_packages(exclude=["tests"]),
     package_data={
         '': ['py.typed'],
     },
     include_package_data=True,
     install_requires=[
-        "boto3~=1.20.10",
-        "numpy~=1.21.4",
-        "pydantic~=1.8.2",
+        "boto3~=1.20.30",
+        "numpy~=1.22.0",
+        "pydantic~=1.9",
         "typer~=0.4.0",
     ],
     extras_require={
@@ -37,6 +37,8 @@ setup(
             "moto[all]==2.2.16",
             "PyYAML==5.4.1",
             "snowflake-connector-python~=2.4.6",
+            "pygit2~=1.7.0",
+            "boto3~=1.20.30",
         ]
     },
     entry_points={

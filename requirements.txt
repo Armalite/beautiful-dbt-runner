@@ -7,3 +7,4 @@ snowflake-connector-python~=2.4.6
 boto3~=1.18.1
 python-dateutil~=2.8.2
 pyarrow~=4.0.1
+pygit2~=1.7.0

@@ -14,6 +14,7 @@ from os import chmod
 
 import boto3
 import requests
+import pygit2
 from botocore.exceptions import ClientError
 
 from src.classes.helpers import ChangeDir
@@ -79,9 +80,27 @@ class DBTPipeline:
         """Fetch DBT Package from S3"""
         self.logger.printlog(f"Fetching DBT package from S3 url: {self.dbt_package_url}")
 
-    def get_dbt_github(self, branch: str) -> None:
+    def get_dbt_github(self, branch=None: str) -> None:
         """Fetch DBT project from Github"""
-        self.logger.printlog(f"Fetching DBT package from Github branch {branch} in repostiroy: {self.dbt_package_url}")
+                
+        self.logger.printlog(f"Fetching DBT package from Github branch {branch} in repository: {self.dbt_package_url}")
+        self.dbt_path = f"{self.package_path}/{self.dbt_path}"
+        shutil.rmtree(self.dbt_path, ignore_errors=True)  # Delete folder on run
+        git_token = self.github_access_token
+        git_repo_path = self.dbt_package_url
+        git_repo_url = (
+            f"https://{git_token}:x-oauth-basic@github.com/slate-data/{git_repo_path}"
+        )
+        cloned_repo = pygit2.clone_repository(git_repo_url, self.dbt_path)
+
+        branch_name=""
+        if branch:
+            branch_name=f"origin/{branch}"
+            branch_origin=cloned_repo.branches[branch_name]
+            branch_ref=cloned_repo.lookup_reference(branch_origin.name)
+            cloned_repo.checkout(branch_ref)
+        
+
 
     def get_dbt_code(self) -> None:
         """Fetch DBT package based on the package type"""

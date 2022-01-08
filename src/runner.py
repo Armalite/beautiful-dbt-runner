@@ -13,8 +13,6 @@ default_config = {
     "DBT_PATH": "dbt",
     "DBT_PASS_SECRET_ARN": None,
     "DBT_CUSTOM_SCHEMA_OVERRIDE": None,
-    "KOTAHI_ID": None,
-    "CLASSIFICATION": "C5",
     "DBT_CUSTOM_PROFILE": None,
     "AWS_REGION": "us-east-1",
     "DBT_DBNAME": None,
