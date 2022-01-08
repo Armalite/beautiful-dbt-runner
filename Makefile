@@ -90,7 +90,8 @@ run-dbt-mounted:
 			-e DBT_TARGET="admin" \
 			-e DBT_ROLE="DBT_ROLE" \
 			-e DBT_PASS \
-			-e DBT_COMMAND="dbt deps --profiles-dir . && dbt compile --profiles-dir ."	\
+			-e DBT_ACCOUNT="ag64xxx.ap-southeast-2" \
+			-e DBT_COMMAND="dbt deps --profiles-dir . && dbt run --profiles-dir ."	\
 			dbt-runner:latest	\
 			$(SHELL)
 

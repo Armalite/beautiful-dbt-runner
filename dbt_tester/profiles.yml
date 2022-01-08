@@ -19,7 +19,7 @@ default:
       user: "DBTRUNNER"
       password:  "{{ env_var('DBT_PASS') }}"
       role: "{{ env_var('DBT_ROLE') }}"
-      database: DATAVAULT
+      database: DBT_TESTER
       warehouse: COMPUTE_WH
       schema: test
       threads: 1
