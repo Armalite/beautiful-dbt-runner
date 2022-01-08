@@ -79,10 +79,14 @@ class DBTPipeline:
     def get_dbt_s3(self) -> None:
         """Fetch DBT Package from S3"""
         self.logger.printlog(f"Fetching DBT package from S3 url: {self.dbt_package_url}")
+        s3_client = boto3.client('s3')
+        self.dbt_path = f"{self.package_path}/{self.dbt_path}"
+        # Download the packaged dbt project from S3
+        s3_client.download_file('MyBucket', self.dbt_package_url, self.dbt_path)
+
 
     def get_dbt_github(self, branch=None: str) -> None:
-        """Fetch DBT project from Github"""
-                
+        """Fetch DBT project from Github"""              
         self.logger.printlog(f"Fetching DBT package from Github branch {branch} in repository: {self.dbt_package_url}")
         self.dbt_path = f"{self.package_path}/{self.dbt_path}"
         shutil.rmtree(self.dbt_path, ignore_errors=True)  # Delete folder on run
@@ -99,8 +103,6 @@ class DBTPipeline:
             branch_origin=cloned_repo.branches[branch_name]
             branch_ref=cloned_repo.lookup_reference(branch_origin.name)
             cloned_repo.checkout(branch_ref)
-        
-
 
     def get_dbt_code(self) -> None:
         """Fetch DBT package based on the package type"""

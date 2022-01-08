@@ -1,6 +1,6 @@
 {
-    "name": "xade-dbt-runner",
-    "version": "0.0.4",
+    "name": "beautiful-dbt-runner",
+    "version": "0.0.1",
     "devDependencies": {
         "pyright": "1.1.187"
     }

@@ -5,14 +5,7 @@ sgr0 := $(shell tput sgr0)
 .PHONY: help install check lint pyright test hooks install-hooks
 .SILENT:
 
-deployer_image_name = "beautiful-dbt-runner-deployer"
 output_location = "output"
-tf_root = "terraform"
-tf_bucket = "beautiful-$(env)-$(aws_region)-terraform"
-tf_key = "dbt-runner/terraform-dbt-runner.tfstate"
-dbt_tester_artifactory_url = ""
-dbt_tester_artifactory_user = "beautiful_dbt_runner_deployer"
-dbt_tester_package_name = "beautiful-data-vault-test"
 dbt_runner_image:="dbt-runner:latest"
 
 MAKEFLAGS += --warn-undefined-variables
@@ -82,13 +75,6 @@ install-hooks: .git/hooks/pre-commit .git/hooks/pre-push
 #
 ###############################################################################
 
-dev-publish-dbt-package:
-	$(eval pkgtag=$(shell date +%s))
-	$(eval pkgurl=$(dbt_tester_artifactory_url)/beautiful-data-vault-test-$(pkgtag))
-	./scripts/tar_my_dbt.sh -c . -s dbt_tester
-	curl -u $(dbt_tester_artifactory_user):${ARTI_PASS} -T dbt_tester.tar.gz $(pkgurl)
-	echo "DBT Package published to $(pkgurl)"
-
 build-dbt-runner-image:
 	docker build -t dbt-runner:latest .
 
@@ -135,10 +121,7 @@ build-deployer-image: **/* #
 	@docker build -t beautiful_dbt_runner_deployer:latest .
 
 publish-docker-images: build-deployer-image
-	echo "$(artifactory_password)" | docker login -u beautiful_dbt_runner_deployer --password-stdin beautiful-dbt-runner-deployer-docker-common.artifactory.beautiful-repo.com
-	docker tag beautiful_dbt_runner_deployer beautiful-dbt-runner-deployer-docker-common.artifactory.beautiful-repo.com/beautiful_dbt_runner_deployer:"$(tag)"
-	docker push beautiful-dbt-runner-deployer-docker-common.artifactory.beautiful-repo.com/beautiful_dbt_runner_deployer:"$(tag)"
-	docker logout
+	echo "Publishing DBT runner image"
 
 ###############################################################################
 # Tests
