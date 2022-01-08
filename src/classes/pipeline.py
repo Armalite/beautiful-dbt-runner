@@ -84,7 +84,7 @@ class DBTPipeline:
         # Download the packaged dbt project from S3
         s3_client.download_file('MyBucket', self.dbt_package_url, self.dbt_path)
 
-    def get_dbt_github(self, branch=None: str) -> None:
+    def get_dbt_github(self, branch=None) -> None:
         """Fetch DBT project from Github"""              
         self.logger.printlog(f"Fetching DBT package from Github branch {branch} in repository: {self.dbt_package_url}")
         self.dbt_path = f"{self.package_path}/{self.dbt_path}"
