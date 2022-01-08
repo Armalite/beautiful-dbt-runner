@@ -6,23 +6,24 @@ default:
       user: "adeeb@something.com"
       authenticator: externalbrowser
       account: somethingsomething.us-east-1
-      role: ROL_ADEEB_RAHMAN
-      database: USERSPACE_ADEEB
-      warehouse: BEAUTIFUL_TEST_WH
+      role: "{{ env_var('DBT_ROLE') }}"
+      database: DBT_TESTER
+      warehouse: COMPUTE_WH
       schema: test
       threads: 4
       query_tag: dbt
 
     admin:
       type: "snowflake"
-      account: "somethingsomething.us-east-1"
-      user: "adeeb@something.com"
+      account: "{{ env_var('DBT_ACCOUNT') }}"
+      user: "DBTRUNNER"
       password:  "{{ env_var('DBT_PASS') }}"
-      role: ACCOUNTADMIN
-      database: USERSPACE_ADEEB
-      warehouse: BEAUTIFUL_TEST_WH
+      role: "{{ env_var('DBT_ROLE') }}"
+      database: DATAVAULT
+      warehouse: COMPUTE_WH
       schema: test
       threads: 1
       client_session_keep_alive: False
+      query_tag: dbt
 
   target: "{{ env_var('DBT_TARGET') }}"

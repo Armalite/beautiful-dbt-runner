@@ -87,7 +87,9 @@ run-dbt-mounted:
 			-v $(pwd)/src:/src \
 			-v $(pwd)/dbt_tester:/dbt_tester \
 			-e DBT_PATH="dbt_tester" \
-			-e DBT_TARGET="dev" \
+			-e DBT_TARGET="admin" \
+			-e DBT_ROLE="DBT_ROLE" \
+			-e DBT_PASS \
 			-e DBT_COMMAND="dbt deps --profiles-dir . && dbt compile --profiles-dir ."	\
 			dbt-runner:latest	\
 			$(SHELL)
