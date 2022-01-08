@@ -24,6 +24,8 @@ default_config = {
     "DBT_PRIVATE_KEY": None,
     "DBT_TARGET": None,
     "REGISTER_ASSETS": None,
+    "DBT_PACKAGE_BRANCH": None,
+    "GITHUB_ACCESS_TOKEN": None,
 }
 
 
@@ -65,7 +67,7 @@ def main() -> None:
     # runner.add_beautiful_dbt_macros()
 
     # Run the specified bash command
-    runner.run_dbt_command()
+    #runner.run_dbt_command()
 
 
 if __name__ == "__main__":

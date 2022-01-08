@@ -92,7 +92,7 @@ class DBTPipeline:
         git_token = self.github_access_token
         git_repo_path = self.dbt_package_url
         git_repo_url = (
-            f"https://{git_token}:x-oauth-basic@github.com/slate-data/{git_repo_path}"
+            f"https://{git_token}:x-oauth-basic@github.com/{git_repo_path}"
         )
         cloned_repo = pygit2.clone_repository(git_repo_url, self.dbt_path)
 
@@ -110,8 +110,12 @@ class DBTPipeline:
             self.get_dbt_artifactory()
         elif self.dbt_package_type == "s3" and (self.dbt_package_url):
             self.get_dbt_s3()
-        elif self.dbt_package_type == "github" and (self.dbt_package_url) and (self.dbt_package_branch):
-            self.get_dbt_s3(self.dbt_package_branch)
+        elif self.dbt_package_type == "github" and (self.dbt_package_url):
+            self.logger.printlog("Github DBT location set")
+            if self.dbt_package_branch:
+                self.get_dbt_github(self.dbt_package_branch)
+            else:
+                self.get_dbt_github()
         else:
             self.logger.printlog(f"No DBT package type or URL specified. Assuming locally mounted in {self.dbt_path}/")
 
@@ -375,6 +379,16 @@ class DBTPipeline:
         """Set the value of DBT_PACKAGE_BRANCH flag"""
         self._env_vars["DBT_PACKAGE_BRANCH"] = value
 
+    @property
+    def github_access_token(self) -> str:
+        """Get the value of GITHUB_ACCESS_TOKEN flag"""
+        return self._env_vars["GITHUB_ACCESS_TOKEN"]
+
+    @dbt_package_branch.setter
+    def github_access_token(self, value: str) -> None:
+        """Set the value of GITHUB_ACCESS_TOKEN flag"""
+        self._env_vars["GITHUB_ACCESS_TOKEN"] = value
+    
     @property
     def package_path(self) -> str:
         """Get the parent path where downloaded packages will be extracted"""

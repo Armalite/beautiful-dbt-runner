@@ -90,8 +90,26 @@ run-dbt-mounted:
 			-e DBT_TARGET="admin" \
 			-e DBT_ROLE="DBT_ROLE" \
 			-e DBT_PASS \
-			-e DBT_ACCOUNT="ag64xxx.ap-southeast-2" \
+			-e DBT_ACCOUNT="ag64214.ap-southeast-2" \
 			-e DBT_COMMAND="dbt deps --profiles-dir . && dbt run --profiles-dir ."	\
+			dbt-runner:latest	\
+			$(SHELL)
+
+run-dbt-github:
+	$(eval pwd:=$(shell pwd))
+	docker run -it \
+			-p 443:443 \
+			-v $(pwd)/src:/src \
+			-v $(pwd)/dbt_download:/dbt_download \
+			-e DBT_PACKAGE_URL="dbt-labs/jaffle_shop" \
+			-e DBT_PACKAGE_TYPE="github" \
+			-e GITHUB_ACCESS_TOKEN="" \
+			-e DBT_PATH="dbt_tester" \
+			-e DBT_TARGET="admin" \
+			-e DBT_ROLE="DBT_ROLE" \
+			-e DBT_PASS \
+			-e DBT_ACCOUNT="ag64214.ap-southeast-2" \
+			-e DBT_COMMAND="dbt deps --profiles-dir . && dbt compile --profiles-dir ."	\
 			dbt-runner:latest	\
 			$(SHELL)
 
@@ -101,7 +119,6 @@ test-container-mounted: build-dbt-runner-image
 	docker run --rm -it \
 			-v $(pwd):/runner \
 			-w /runner \
-			-e ARTI_PASS \
 			--entrypoint "make" \
 			$(dbt_runner_image)	\
 			test
