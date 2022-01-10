@@ -94,14 +94,22 @@ class DBTPipeline:
         git_repo_url = (
             f"https://{git_token}:x-oauth-basic@github.com/{git_repo_path}"
         )
-        cloned_repo = pygit2.clone_repository(git_repo_url, self.dbt_path)
+        try :
+            cloned_repo = pygit2.clone_repository(git_repo_url, self.dbt_path)
+        except Exception as e:
+            self.logger.printlog(f"Could not clone the github repository. Exception: {e}")
+
         self.logger.printlog(f"DBT repository successfully cloned to {self.dbt_path}")
         branch_name=""
         if branch:
-            branch_name=f"origin/{branch}"
-            branch_origin=cloned_repo.branches[branch_name]
-            branch_ref=cloned_repo.lookup_reference(branch_origin.name)
-            cloned_repo.checkout(branch_ref)
+            try :
+                branch_name=f"origin/{branch}"
+                branch_origin=cloned_repo.branches[branch_name]
+                branch_ref=cloned_repo.lookup_reference(branch_origin.name)
+                cloned_repo.checkout(branch_ref)
+            except Exception as e:
+                self.logger.printlog(f"Could not checkout the branch: {branch_name}. Exception: {e}")
+           
             self.logger.printlog(f"Successfully checked out the following branch from cloned DBT project: {branch_name}")
 
     def get_dbt_code(self) -> None:
