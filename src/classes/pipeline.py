@@ -95,13 +95,14 @@ class DBTPipeline:
             f"https://{git_token}:x-oauth-basic@github.com/{git_repo_path}"
         )
         cloned_repo = pygit2.clone_repository(git_repo_url, self.dbt_path)
-
+        self.logger.printlog(f"DBT repository successfully cloned to {self.dbt_path}")
         branch_name=""
         if branch:
             branch_name=f"origin/{branch}"
             branch_origin=cloned_repo.branches[branch_name]
             branch_ref=cloned_repo.lookup_reference(branch_origin.name)
             cloned_repo.checkout(branch_ref)
+            self.logger.printlog(f"Successfully checked out the following branch from cloned DBT project: {branch_name}")
 
     def get_dbt_code(self) -> None:
         """Fetch DBT package based on the package type"""

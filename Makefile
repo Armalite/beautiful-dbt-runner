@@ -79,7 +79,7 @@ build-dbt-runner-image:
 	docker build -t dbt-runner:latest .
 
 
-# This example mounts the local dbt project (dbt_tester) into the container under dbt/
+# This example mounts the local dbt project (dbt_tester) into the container under dbt_tester/
 run-dbt-mounted:
 	$(eval pwd:=$(shell pwd))
 	docker run -it \
@@ -95,13 +95,15 @@ run-dbt-mounted:
 			dbt-runner:latest	\
 			$(SHELL)
 
+# This fetches a dbt project from github. The repository path is specified in the DBT_PACKAGE_URL env var
+# The dbt_download folder is mounted just so that we can see the cloned github repo locally
 run-dbt-github:
 	$(eval pwd:=$(shell pwd))
 	docker run -it \
 			-p 443:443 \
 			-v $(pwd)/src:/src \
 			-v $(pwd)/dbt_download:/dbt_download \
-			-e DBT_PACKAGE_URL="dbt-labs/jaffle_shop" \
+			-e DBT_PACKAGE_URL="Armalite/yummy-dummy-dbt" \
 			-e DBT_PACKAGE_TYPE="github" \
 			-e GITHUB_ACCESS_TOKEN="" \
 			-e DBT_PATH="dbt_tester" \
