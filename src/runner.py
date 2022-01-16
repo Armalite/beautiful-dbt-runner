@@ -57,7 +57,6 @@ def main() -> None:
     runner = DBTPipeline(config)
 
     # Get service account credentials
-
     # self.get_credentials()
 
     # Fetch DBT pipeline code/package
@@ -66,11 +65,11 @@ def main() -> None:
     # Add required custom macros to DBT project
     # runner.add_custom_macros()
 
-    # Output the DBT logs
-    # runner.output_dbt_logs()
-
     # Run the specified bash command
     runner.run_dbt_command()
+
+    # Output the DBT logs
+    # runner.output_dbt_logs()
 
     # Clean up all packages
     runner.cleanup_packages()
