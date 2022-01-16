@@ -103,9 +103,8 @@ run-dbt-github:
 			-p 443:443 \
 			-v $(pwd)/src:/src \
 			-v $(pwd)/dbt_download:/dbt_download \
-			-e DBT_PACKAGE_URL="Armalite/yummy-dummy-dbt" \
+			-e DBT_PACKAGE_URL="https://github.com/Armalite/yummy-dummy-dbt/" \
 			-e DBT_PACKAGE_TYPE="github" \
-			-e GITHUB_ACCESS_TOKEN="" \
 			-e DBT_PATH="dbt_tester" \
 			-e DBT_TARGET="admin" \
 			-e DBT_ROLE="DBT_ROLE" \

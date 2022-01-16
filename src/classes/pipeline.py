@@ -8,9 +8,11 @@ import glob
 import os
 import shutil
 import subprocess
+import time
 import sys
 import tarfile
 from os import chmod
+import select
 
 import boto3
 import requests
@@ -29,6 +31,7 @@ class DBTPipeline:
 
     logger = None
     _package_path = "dbt_download"
+    _log_process = None
 
     _env_vars = {}
 
@@ -89,11 +92,8 @@ class DBTPipeline:
         self.logger.printlog(f"Fetching DBT package from Github branch {branch} in repository: {self.dbt_package_url}")
         self.dbt_path = f"{self.package_path}/{self.dbt_path}"
         shutil.rmtree(self.dbt_path, ignore_errors=True)  # Delete folder on run
-        git_token = self.github_access_token
-        git_repo_path = self.dbt_package_url
-        git_repo_url = (
-            f"https://{git_token}:x-oauth-basic@github.com/{git_repo_path}"
-        )
+        git_repo_url = self.dbt_package_url
+        
         try :
             cloned_repo = pygit2.clone_repository(git_repo_url, self.dbt_path)
         except Exception as e:
@@ -155,6 +155,20 @@ class DBTPipeline:
                     self.logger.printlog(f"Access Denied to Secrets Manager secrets: {self.dbt_pass_secret_arn}")
                 else:
                     self.logger.printlog(f"Unexpected error: {err}")
+   
+    
+    def cleanup_packages(self) -> None:
+        """Cleanup all downloaded packages in the download directory"""
+        folder = self.package_path
+        for filename in os.listdir(folder):
+            file_path = os.path.join(folder, filename)
+            try:
+                if os.path.isfile(file_path) or os.path.islink(file_path):
+                    os.unlink(file_path)
+                elif os.path.isdir(file_path):
+                    shutil.rmtree(file_path)
+            except Exception as e:
+                print('Failed to delete %s. Reason: %s' % (file_path, e))
 
     def run_dbt_command(self) -> None:
         """Run the specified DBT/shell command"""
@@ -177,7 +191,7 @@ class DBTPipeline:
             self.logger.printlog(
                 f"Target dbt project folder not found. Please ensure DBT_PATH is set to the name of the project folder. Error: {err}")
 
-    def add_beautiful_dbt_macros(self) -> None:
+    def add_custom_macros(self) -> None:
         """Add custom DBT Macros to the DBT project folder"""
         if self.register_assets:
             self.logger.printlog(f"Adding custom DBT macros to the DBT Project folder {self.dbt_path}/")
@@ -193,6 +207,15 @@ class DBTPipeline:
                 self.logger.printlog(f"Target dbt project folder not found to copy macros to. Error: {err}")
         else:
             self.logger.printlog("Asset registration disabled")
+
+    def output_dbt_logs(self) -> None:
+        logfile = f"{self.dbt_path}/logs/dbt.log"
+        self.logger.printlog("Outputting DBT Logs")
+        with open(logfile, 'r') as f:
+            loglines = f.readlines()
+            for line in loglines:
+                self.logger.printlog(line)
+            f.close()              
 
     @property
     def env_vars(self) -> dict:
@@ -399,6 +422,16 @@ class DBTPipeline:
         self._env_vars["GITHUB_ACCESS_TOKEN"] = value
     
     @property
+    def log_process(self) -> str:
+        """Get the value of GITHUB_ACCESS_TOKEN flag"""
+        return self._log_process
+
+    @log_process.setter
+    def log_process(self, value: str) -> None:
+        """Set the value of GITHUB_ACCESS_TOKEN flag"""
+        self._log_process = value
+
+    @property
     def package_path(self) -> str:
         """Get the parent path where downloaded packages will be extracted"""
         return self._package_path
@@ -408,5 +441,5 @@ class DBTPipeline:
         config: dict
     ):
         self.logger = DBTLogger()
-        self.logger.printlog("DBT Pipeline process started")
+        self.logger.printlog("DBT Runner process started")
         self.env_vars = config

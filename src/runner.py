@@ -64,10 +64,16 @@ def main() -> None:
     runner.get_dbt_code()
 
     # Add required custom macros to DBT project
-    # runner.add_beautiful_dbt_macros()
+    # runner.add_custom_macros()
+
+    # Output the DBT logs
+    # runner.output_dbt_logs()
 
     # Run the specified bash command
-    #runner.run_dbt_command()
+    runner.run_dbt_command()
+
+    # Clean up all packages
+    runner.cleanup_packages()
 
 
 if __name__ == "__main__":
