@@ -411,26 +411,6 @@ class DBTPipeline:
         self._env_vars["DBT_PACKAGE_BRANCH"] = value
 
     @property
-    def github_access_token(self) -> str:
-        """Get the value of GITHUB_ACCESS_TOKEN flag"""
-        return self._env_vars["GITHUB_ACCESS_TOKEN"]
-
-    @dbt_package_branch.setter
-    def github_access_token(self, value: str) -> None:
-        """Set the value of GITHUB_ACCESS_TOKEN flag"""
-        self._env_vars["GITHUB_ACCESS_TOKEN"] = value
-    
-    @property
-    def log_process(self) -> str:
-        """Get the value of GITHUB_ACCESS_TOKEN flag"""
-        return self._log_process
-
-    @log_process.setter
-    def log_process(self, value: str) -> None:
-        """Set the value of GITHUB_ACCESS_TOKEN flag"""
-        self._log_process = value
-
-    @property
     def package_path(self) -> str:
         """Get the parent path where downloaded packages will be extracted"""
         return self._package_path
