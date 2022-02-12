@@ -154,7 +154,7 @@ class DBTPipeline:
                 if err.response["Error"]["Code"] == "AccessDeniedException":
                     self.logger.printlog(f"Access Denied to Secrets Manager secrets: {self.dbt_pass_secret_arn}")
                 else:
-                    self.logger.printlog(f"Unexpected error: {err}"
+                    self.logger.printlog(f"Unexpected error: {err}")
     
     def cleanup_packages(self) -> None:
         """Cleanup all downloaded packages in the download directory"""

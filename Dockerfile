@@ -27,6 +27,7 @@ RUN rm requirements.txt
 
 COPY src /src
 COPY tests /tests
+COPY dbt_download /dbt_download
 COPY Makefile /Makefile
 COPY profiles/profiles.yml ~/.dbt/profiles.yml
 
