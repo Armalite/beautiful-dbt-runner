@@ -2,7 +2,9 @@
 __pycache__/
 *.py[cod]
 *$py.class
-
+dbt_packages/
+dbt_packages
+dbt_packages/*
 # C extensions
 *.so
 

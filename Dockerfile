@@ -1,4 +1,4 @@
-FROM fishtownanalytics/dbt:0.20.2
+FROM fishtownanalytics/dbt:1.0.0
 
 RUN apt-get update \
   && apt-get dist-upgrade -y \
@@ -16,8 +16,6 @@ RUN apt-get update \
 RUN pip install --upgrade pip
 RUN pip --no-cache-dir install --upgrade awscli
 RUN pip install dbt-snowflake
-RUN pip install dbt-redshift
-RUN pip install dbt-postgres
 RUN pip install moto[all]
 RUN pip install pytest
 

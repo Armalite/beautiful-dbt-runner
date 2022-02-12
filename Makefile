@@ -75,7 +75,7 @@ install-hooks: .git/hooks/pre-commit .git/hooks/pre-push
 #
 ###############################################################################
 
-build-dbt-runner-image:
+build:
 	docker build -t dbt-runner:latest .
 
 
