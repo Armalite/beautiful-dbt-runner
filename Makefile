@@ -95,6 +95,27 @@ run-dbt-mounted:
 			dbt-runner:latest	\
 			$(SHELL)
 
+# This example mounts the local dbt project (dbt_tester) into the container and uses the key pair configuration for connection
+run-dbt-mounted-key:
+	$(eval pwd:=$(shell pwd))
+	docker run -it \
+			-p 443:443 \
+			-v $(pwd)/src:/src \
+			-v $(pwd)/dbt_tester:/dbt_tester \
+			-e DBT_USER="DATAVAULT_SANDBOX_SA" \
+			-e DBT_PASS_SECRET_ARN='arn:aws:secretsmanager:us-east-1:754844678212:secret:snowflake.user.privatekey.datavault_sandbox_sa-J44Zgh' \
+			-e DBT_CRED_TYPE='key' \
+			-e DBT_KEY_NAME='private.key' \
+			-e AWS_ACCESS_KEY_ID \
+			-e AWS_SECRET_ACCESS_KEY \
+			-e AWS_SESSION_TOKEN \
+			-e DBT_PATH="dbt_tester" \
+			-e DBT_TARGET="sandbox_key" \
+			-e DBT_ROLE="DATAVAULT_SANDBOX_ADMIN" \
+			-e DBT_WH="DATAVAULT_SANDBOX_WH" \
+			-e DBT_COMMAND="./run_dbt.sh"	\
+			dbt-runner:latest	\
+
 # This fetches a dbt project from github. The repository path is specified in the DBT_PACKAGE_URL env var
 # The dbt_download folder is mounted just so that we can see the cloned github repo locally
 run-dbt-github:
