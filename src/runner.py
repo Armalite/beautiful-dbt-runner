@@ -56,11 +56,11 @@ def main() -> None:
 
     runner = DBTPipeline(config)
 
-    # Get service account credentials
-    # self.get_credentials()
-
     # Fetch DBT pipeline code/package
     runner.get_dbt_code()
+
+    # Get service account credentials
+    # self.get_credentials()
 
     # Add required custom macros to DBT project
     # runner.add_custom_macros()
