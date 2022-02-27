@@ -12,6 +12,8 @@ default_config = {
     "DBT_COMMAND": "dbt run",
     "DBT_PATH": "dbt",
     "DBT_PASS_SECRET_ARN": None,
+    "DBT_CRED_TYPE": "password",
+    "DBT_KEY_NAME": "private.key",
     "DBT_CUSTOM_SCHEMA_OVERRIDE": None,
     "DBT_CUSTOM_PROFILE": None,
     "AWS_REGION": "us-east-1",
@@ -24,7 +26,6 @@ default_config = {
     "DBT_PRIVATE_KEY": None,
     "DBT_TARGET": None,
     "REGISTER_ASSETS": None,
-    "DBT_PACKAGE_BRANCH": None,
     "GITHUB_ACCESS_TOKEN": None,
 }
 

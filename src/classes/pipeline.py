@@ -133,28 +133,84 @@ class DBTPipeline:
         using the secret_arn provided. If DBT_PASS environment variable
         has been set, the secrets fetching step is ignored """
 
-        if os.environ.get("DBT_PASS"):
-            self.logger.printlog("""DBT_PASS already set. Skipping fetching secrets step""")
-        else:
+        if os.environ.get("DBT_CRED_TYPE") == "password" or os.environ.get("DBT_CRED_TYPE") is None:
+            self.logger.printlog("DBT_CRED_TYPE is set to 'password'. Expecting a password for DBT credentials.")
+            if os.environ.get("DBT_PASS"):
+                self.logger.printlog("""DBT_PASS already set. Skipping fetching secrets step""")
+            else:
+                if self.dbt_pass_secret_arn is None:
+                    self.logger.printlog("Either (DBT_PASS) or (DBT_PASS_SECRET_ARN) environment variables must be set")
+                    sys.exit(1)
+
+                try:
+                    self.logger.printlog(f"Attempting to fetch secret from: {self.dbt_pass_secret_arn}")
+                    secretclient = boto3.client("secretsmanager", region_name=f"{self.aws_region}")
+                    password_val = secretclient.get_secret_value(
+                        SecretId=f'{self.dbt_pass_secret_arn}'
+                    )
+                    self.dbt_pass = password_val["SecretString"]
+                    os.environ["DBT_USER"] = self.dbt_user
+                    os.environ["DBT_PASS"] = self.dbt_pass
+                    self.logger.printlog(f"Credentials obtained from {self.dbt_pass_secret_arn}")
+                    return password_val
+                except ClientError as err:
+                    if err.response["Error"]["Code"] == "AccessDeniedException":
+                        self.logger.printlog(f"Access Denied to Secrets Manager secrets: {self.dbt_pass_secret_arn}")
+                        exit(1)
+                    else:
+                        self.logger.printlog(f"Unexpected error: {err}")
+                except NoCredentialsError as ncerr:
+                    self.logger.printlog(
+                        f"AWS credentials not found. Please pass AWS Credentials to the container (access key id, secret access key, session token). Error: {ncerr}")
+                    exit(1)
+        elif os.environ.get("DBT_CRED_TYPE") == "key":
+            self.logger.printlog(
+                f"DBT_CRED_TYPE is set to 'key'. Expecting a private key file with the following name: {self.dbt_key_name}")
+            self.logger.printlog("You must provide a dbt profile that accepts a private key path!")
             if self.dbt_pass_secret_arn is None:
-                self.logger.printlog("Either (DBT_PASS) or (DBT_PASS_SECRET_ARN) environment variables must be set")
+                self.logger.printlog(
+                    "For DBT_CRED_TYPE of 'key', the (DBT_PASS_SECRET_ARN) environment variables must be set")
                 sys.exit(1)
 
             try:
+                self.logger.printlog(f"Attempting to fetch secret from: {self.dbt_pass_secret_arn}")
                 secretclient = boto3.client("secretsmanager", region_name=f"{self.aws_region}")
-                password_val = secretclient.get_secret_value(
+                key_val = secretclient.get_secret_value(
                     SecretId=f'{self.dbt_pass_secret_arn}'
                 )
-                self.dbt_pass = password_val["SecretString"]
+                # Boto3 base64 decodes SecretBinary's from secrets manager.
+                # So have to re-encode it before turning it into a string
+                # and then hacking together a private key pem file
+                private_key_content = '''-----BEGIN PRIVATE KEY-----\n''' + \
+                    base64.b64encode(key_val["SecretBinary"]).decode('utf-8') + '''\n-----END PRIVATE KEY-----'''
+
+                self.dbt_pass = key_val["SecretBinary"]
+                os.environ["DBT_PASS"] = "key"
                 os.environ["DBT_USER"] = self.dbt_user
-                os.environ["DBT_PASS"] = self.dbt_pass
-                self.logger.printlog("Credentials obtained.")
-                return password_val
+
+                self.logger.printlog(f"Private Key Credentials obtained from {self.dbt_pass_secret_arn}")
+
+                # Write the private key into a file
+                self.logger.printlog(f"Writing private key to file: {self.dbt_key_name}")
+                with ChangeDir(f"{self.dbt_path}"):
+                    try:
+                        with open(f'{self.dbt_key_name}', 'w') as f:
+                            f.write(private_key_content)
+                    except Exception as e:
+                        self.logger.printlog(f"ERROR: Failed to store private key in file: {e}")
+
+                return key_val
             except ClientError as err:
                 if err.response["Error"]["Code"] == "AccessDeniedException":
-                    self.logger.printlog(f"Access Denied to Secrets Manager secrets: {self.dbt_pass_secret_arn}")
+                    self.logger.printlog(
+                        f"Access Denied to Secrets Manager secrets: {self.dbt_pass_secret_arn} . Error: {err}")
+                    exit(1)
                 else:
                     self.logger.printlog(f"Unexpected error: {err}")
+            except NoCredentialsError as ncerr:
+                self.logger.printlog(
+                    f"AWS credentials not found. Please pass AWS Credentials to the container (access key id, secret access key, session token). Error: {ncerr}")
+                exit(1)
     
     def cleanup_packages(self) -> None:
         """Cleanup all downloaded packages in the download directory"""
@@ -409,6 +465,26 @@ class DBTPipeline:
     def dbt_package_branch(self, value: str) -> None:
         """Set the value of DBT_PACKAGE_BRANCH flag"""
         self._env_vars["DBT_PACKAGE_BRANCH"] = value
+
+    @property
+    def dbt_cred_type(self) -> str:
+        """Get the value of DBT_CRED_TYPE flag"""
+        return self._env_vars["DBT_CRED_TYPE"]
+
+    @dbt_cred_type.setter
+    def dbt_cred_type(self, value: str) -> None:
+        """Set the value of DBT_CRED_TYPE flag"""
+        self._env_vars["DBT_CRED_TYPE"] = value
+
+    @property
+    def dbt_key_name(self) -> str:
+        """Get the value of DBT_KEY_NAME flag"""
+        return self._env_vars["DBT_KEY_NAME"]
+
+    @dbt_key_name.setter
+    def dbt_key_name(self, value: str) -> None:
+        """Set the value of DBT_KEY_NAME flag"""
+        self._env_vars["DBT_KEY_NAME"] = value
 
     @property
     def package_path(self) -> str:
