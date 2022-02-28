@@ -32,8 +32,8 @@ default_config = {
 
 def read_env_vars() -> dict:
     """Read all supported container environment variables into the app"""
-    print("[Beautiful DBT Runner] Reading environment variables...")
-
+    runner_logger = DBTLogger()
+    runner_logger.printlog("[Beautiful DBT Runner] Reading environment variables...")
     config = default_config
 
     for key in config:
@@ -42,9 +42,9 @@ def read_env_vars() -> dict:
                 config[key] = os.environ.get(f"{key}")
             if key not in ["DBT_PASS"]:
                 if config[key]:
-                    print(f"[Beautiful DBT Runner] {key} set to: {config[key]}")
+                    runner_logger.printlog(f"[Beautiful DBT Runner] {key} set to: {config[key]}")
         except KeyError:
-            print(f"[Beautiful DBT Runner] Environment variable not set: {key}")
+            runner_logger.printlog(f"[Beautiful DBT Runner] Environment variable not set: {key}")
 
     return config
 
