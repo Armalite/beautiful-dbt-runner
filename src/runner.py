@@ -26,6 +26,7 @@ default_config = {
     "DBT_PRIVATE_KEY": None,
     "DBT_TARGET": None,
     "REGISTER_ASSETS": None,
+    "DBT_PACKAGE_BRANCH": None,
 }
 
 def read_env_vars() -> dict:
@@ -47,7 +48,7 @@ def read_env_vars() -> dict:
 
 def main() -> None:
     """ DBT Runner app main function """
-    
+
     # Generate a config based on supported environment variables
     config = read_env_vars()
 

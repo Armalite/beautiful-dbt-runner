@@ -90,7 +90,7 @@ run-dbt-mounted:
 			-e DBT_TARGET="admin" \
 			-e DBT_ROLE="DBT_ROLE" \
 			-e DBT_PASS \
-			-e DBT_ACCOUNT="ag64214.ap-southeast-2" \
+			-e DBT_ACCOUNT \
 			-e DBT_COMMAND="dbt deps --profiles-dir . && dbt run --profiles-dir ."	\
 			dbt-runner:latest	\
 			$(SHELL)
@@ -130,7 +130,7 @@ run-dbt-github:
 			-e DBT_TARGET="admin" \
 			-e DBT_ROLE="DBT_ROLE" \
 			-e DBT_PASS \
-			-e DBT_ACCOUNT="ag64214.ap-southeast-2" \
+			-e DBT_ACCOUNT \
 			-e DBT_COMMAND="./run_dbt.sh"	\
 			dbt-runner:latest	\
 			$(SHELL)
