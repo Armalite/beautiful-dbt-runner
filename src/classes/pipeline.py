@@ -47,12 +47,15 @@ class DBTPipeline:
             except requests.exceptions.Timeout as e:
                 self.logger.printlog("ERROR: Request to fetch Artifactory package has timed out")
                 raise SystemExit(e)
+                sys.exit(1)
             except requests.exceptions.TooManyRedirects as e:
                 self.logger.printlog("ERROR: Invalid Artifactory URL provided")
                 raise SystemExit(e)
+                sys.exit(1)
             except requests.exceptions.RequestException as e:
                 self.logger.printlog("ERROR: Could not fetch Artifactory package")
                 raise SystemExit(e)
+                sys.exit(1)
 
             # Write the fetched package stream in chunks
             try:
@@ -61,6 +64,7 @@ class DBTPipeline:
                         f.write(chunk)
             except Exception as e:
                 self.logger.printlog(f"ERROR: Failed to save downloaded DBT Package: {e}")
+                sys.exit(1)
 
             try:
                 if os.stat('dbt.tar.gz').st_size > 0:
@@ -75,6 +79,7 @@ class DBTPipeline:
                     print("Artefact has no content")
             except Exception as e:
                 self.logger.printlog(f"ERROR: Failed to extract contents of the tar.gz DBT package: {e}")
+                sys.exit(1)
         else:
             self.logger.printlog(
                 "Error: DBT_PACKAGE_TYPE set to 'artifactory' but artifactory URL not set in DBT_PACKAGE_URL")
@@ -109,6 +114,7 @@ class DBTPipeline:
                 cloned_repo.checkout(branch_ref)
             except Exception as e:
                 self.logger.printlog(f"Could not checkout the branch: {branch_name}. Exception: {e}")
+                sys.exit(1)
            
             self.logger.printlog(f"Successfully checked out the following branch from cloned DBT project: {branch_name}")
 
@@ -156,13 +162,13 @@ class DBTPipeline:
                 except ClientError as err:
                     if err.response["Error"]["Code"] == "AccessDeniedException":
                         self.logger.printlog(f"Access Denied to Secrets Manager secrets: {self.dbt_pass_secret_arn}")
-                        exit(1)
+                        sys.exit(1)
                     else:
                         self.logger.printlog(f"Unexpected error: {err}")
                 except NoCredentialsError as ncerr:
                     self.logger.printlog(
                         f"AWS credentials not found. Please pass AWS Credentials to the container (access key id, secret access key, session token). Error: {ncerr}")
-                    exit(1)
+                    sys.exit(1)
         elif os.environ.get("DBT_CRED_TYPE") == "key":
             self.logger.printlog(
                 f"DBT_CRED_TYPE is set to 'key'. Expecting a private key file with the following name: {self.dbt_key_name}")
