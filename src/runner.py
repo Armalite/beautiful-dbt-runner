@@ -3,7 +3,7 @@
 """ Main DBT Runner app """
 
 import os
-
+from src.classes.logger import DBTLogger
 from src.classes.pipeline import DBTPipeline
 
 default_config = {
@@ -26,55 +26,42 @@ default_config = {
     "DBT_PRIVATE_KEY": None,
     "DBT_TARGET": None,
     "REGISTER_ASSETS": None,
-    "GITHUB_ACCESS_TOKEN": None,
 }
-
 
 def read_env_vars() -> dict:
     """Read all supported container environment variables into the app"""
-    runner_logger = DBTLogger()
-    runner_logger.printlog("[Beautiful DBT Runner] Reading environment variables...")
-    config = default_config
 
+    runner_logger = DBTLogger()
+    runner_logger.printlog("Reading environment variables...")
+    config = default_config
     for key in config:
         try:
             if os.environ.get(f"{key}"):
                 config[key] = os.environ.get(f"{key}")
             if key not in ["DBT_PASS"]:
                 if config[key]:
-                    runner_logger.printlog(f"[Beautiful DBT Runner] {key} set to: {config[key]}")
+                    runner_logger.printlog(f"{key} set to: {config[key]}")
         except KeyError:
-            runner_logger.printlog(f"[Beautiful DBT Runner] Environment variable not set: {key}")
-
+            runner_logger.printlog(f"Environment variable not set: {key}")
     return config
-
 
 def main() -> None:
     """ DBT Runner app main function """
-    # Initialize the pipeline object
-
+    
+    # Generate a config based on supported environment variables
     config = read_env_vars()
 
+    # Create a DBT Pipeline object
     runner = DBTPipeline(config)
 
     # Fetch DBT pipeline code/package
     runner.get_dbt_code()
 
     # Get service account credentials
-    # self.get_credentials()
-
-    # Add required custom macros to DBT project
-    # runner.add_custom_macros()
+    runner.get_credentials()
 
     # Run the specified bash command
     runner.run_dbt_command()
-
-    # Output the DBT logs
-    # runner.output_dbt_logs()
-
-    # Clean up all packages
-    #runner.cleanup_packages()
-
 
 if __name__ == "__main__":
     main()
