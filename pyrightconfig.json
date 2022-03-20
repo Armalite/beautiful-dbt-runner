@@ -4,5 +4,5 @@
     "strictParameterNoneValue": true,
     "reportTypedDictNotRequiredAccess": false,
     "reportOptionalMemberAccess": false,
-    "reportGeneralTypeIssues": false,
+    "reportGeneralTypeIssues": false
 }

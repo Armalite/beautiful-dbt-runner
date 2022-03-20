@@ -73,7 +73,7 @@ def main() -> None:
     # runner.output_dbt_logs()
 
     # Clean up all packages
-    runner.cleanup_packages()
+    #runner.cleanup_packages()
 
 
 if __name__ == "__main__":
