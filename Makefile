@@ -122,6 +122,8 @@ run-dbt-mounted-key:
 
 # This fetches a dbt project from github. The repository path is specified in the DBT_PACKAGE_URL env var
 # The dbt_download folder is mounted just so that we can see the cloned github repo locally
+# For your purposes you can replace DBT_PACKAGE_URL values to point to your own github containing your dbt project
+# DBT_PASS will need to be set in your environment variable, along with DBT_ACCOUNT (Snowflake account)
 run-dbt-github:
 	$(eval pwd:=$(shell pwd))
 	docker run -it \

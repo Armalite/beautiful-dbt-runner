@@ -8,19 +8,23 @@ The Beautiful DBT Runner image will be located in the following repository: <TBD
 
 
 # DBT Runner Container Usage
-The DBT Runner container operates based on environment variables being passed into it. This can be done within any container runtime, such as using `docker run` or within a Kubernetes deployment that passes in environment variables. To get an idea of how environment variables can be used, you can view the Makefile local development targets that perform some 'dummy' runs of the container. There are multiple targets, each starting the container with a different set of environment variables that gets handled in different ways e.g. One target pulls a dummy dbt project package from Artifactory, unpackages and then attempts to run it. Another target does not specify an artifactory url, so the DBT runner assumes that you have mounted or 'baked' your dbt project onto the container.
+The DBT Runner container operates based on environment variables being passed into it. This can be done within any container runtime, such as using `docker run` or within a Kubernetes deployment that passes in environment variables. To get an idea of how environment variables can be used, you can view the Makefile local development targets that perform some 'dummy' runs of the container. There are multiple targets, each starting the container with a different set of environment variables that gets handled in different ways.
 
 ## Dummy DBT Project mounted into Container
 This test run of the DBT runner mounts a local dbt project folder directly into the container at runtime. The local dbt project available in this repo is in the dbt_tester folder.
  1. Run `make run-dbt-mounted`
- 2. View the Makefile to see what environment variables are passed into the container at runtime
+ 2. View the Makefile to see what environment variables are passed into the container at runtime. You will need to update some of these values to align with your Snowflake connectivity
+
+## Dummy DBT Project Fetched from Github
+ 1. Run `make run-dbt-github`
+ 2. View the makefile to see what environment variables are passed into the container at runtime. You will need to update some of these values to align with your Snowflake connectivity
 
 # Local App Usage (Containerless)
 There is a test dbt project located in this repo in the dbt_tester folder. You can run the DBT Runner application outside of a docker container by specifying the path to this dbt_tester folder in your local DBT_PATH environment variable. You will also need to update the profiles.yml file in the dbt_tester folder to include your credentials. The dev target in this profiles.yml file is structured for web browser auth.
 
  1. To set the dbt path to the test dbt folder: `export DBT_PATH=dbt_tester`
  2. To set dbt target to dev, so that it uses web browser auth: `export DBT_TARGET=dev`
- 3. To run the DBT Runner app locally: `python3 -m src.runner`
+ 3. To run the DBT Runner app locally (i.e. not within the container): `python3 -m src.runner`
 
 # CONTRIBUTING
 ## Local Development
