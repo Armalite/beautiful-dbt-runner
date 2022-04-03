@@ -80,6 +80,7 @@ build:
 
 
 # This example mounts the local dbt project (dbt_tester) into the container under dbt_tester/
+# The source code is also mounted during this command to test changes quickly (i.e. image does not need rebuilding)
 run-dbt-mounted:
 	$(eval pwd:=$(shell pwd))
 	docker run -it \
@@ -96,14 +97,17 @@ run-dbt-mounted:
 			$(SHELL)
 
 # This example mounts the local dbt project (dbt_tester) into the container and uses the key pair configuration for connection
+# This command also takes in DBT_PASS_SECRET_ARN as a parameter, which will cause the application to attempt to fetch this secret
+# Since DBT_CRED_TYPE='key', the application will assume the stored secret is a private key stored as a binary, and will fetch + write it to a file named specified in DBT_KEY_NAME param
+# Update the values of DBT_USER, DBT_PASS_SECRET_ARN, DBT_RPOLE, DBT_WH, DBT_COMMAND etc.
 run-dbt-mounted-key:
 	$(eval pwd:=$(shell pwd))
 	docker run -it \
 			-p 443:443 \
 			-v $(pwd)/src:/src \
 			-v $(pwd)/dbt_tester:/dbt_tester \
-			-e DBT_USER="DATAVAULT_SANDBOX_SA" \
-			-e DBT_PASS_SECRET_ARN='arn:aws:secretsmanager:us-east-1:754844678212:secret:snowflake.user.privatekey.datavault_sandbox_sa-J44Zgh' \
+			-e DBT_USER="MY_DBT_USER" \
+			-e DBT_PASS_SECRET_ARN='arn:aws:secretsmanager:us-east-1:123456789123:secret:snowflake.user.privatekey.mysecret-abc' \
 			-e DBT_CRED_TYPE='key' \
 			-e DBT_KEY_NAME='private.key' \
 			-e AWS_ACCESS_KEY_ID \
@@ -111,8 +115,8 @@ run-dbt-mounted-key:
 			-e AWS_SESSION_TOKEN \
 			-e DBT_PATH="dbt_tester" \
 			-e DBT_TARGET="sandbox_key" \
-			-e DBT_ROLE="DATAVAULT_SANDBOX_ADMIN" \
-			-e DBT_WH="DATAVAULT_SANDBOX_WH" \
+			-e DBT_ROLE="MY_SNOWFLAKE_ROLE" \
+			-e DBT_WH="MY_SNOWFLAKE_WH" \
 			-e DBT_COMMAND="./run_dbt.sh"	\
 			dbt-runner:latest	\
 
